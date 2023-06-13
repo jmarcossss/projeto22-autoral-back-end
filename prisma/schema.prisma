@@ -1,0 +1,72 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          Int          @id @default(autoincrement())
+  name        String
+  email       String       @unique
+  password    String
+  createdAt   DateTime     @default(now())
+  depositions Deposition[]
+  budgets     Budget[]
+
+  @@map("users")
+}
+
+model Deposition {
+  id        Int      @id @default(autoincrement())
+  stars     Int
+  text      String
+  username  String
+  createdAt DateTime @default(now())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@map("depositions")
+}
+
+model Portfolio {
+  id        Int           @id @default(autoincrement())
+  imageURL  String
+  type      PortfolioType
+  createdAt DateTime      @default(now())
+
+  @@map("portfolio_images")
+}
+
+enum PortfolioType {
+  Work
+  Art
+  Flash
+}
+
+model Budget {
+  id          Int         @id @default(autoincrement())
+  name        String
+  email       String
+  number      String
+  description String
+  size        String
+  createdAt   DateTime    @default(now())
+  userId      Int?
+  user        User?       @relation(fields: [userId], references: [id])
+
+  @@map("budgets")
+}
+
+model Reference {
+  id       Int    @id @default(autoincrement())
+  image    String
+  budgetId Int
+
+  @@map("references")
+}
